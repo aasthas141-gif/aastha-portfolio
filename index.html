@@ -174,10 +174,14 @@ section{scroll-margin-top:72px}
 .bfly-copy p{font-family:var(--f-display);color:#1F1F1F;font-size:16px;line-height:1.6;white-space:nowrap;max-width:none!important;width:max-content;position:relative;left:50%;transform:translateX(-50%);margin-left:0!important;margin-right:0!important;margin:clamp(12px,1.4vw,20px) auto 0;max-width:52ch}
 @media (max-width:720px){.bfly-copy::before{inset:-30% -4%}.bfly-copy{width:92vw}.bfly-copy h1{font-size:26px}.bfly-copy p{font-size:min(16px,calc((100vw - 32px) / 27.3));line-height:1.6}.bfly-copy::before{inset:-26% -6%}}
 @media (prefers-reduced-motion:reduce){.bfly-copy{transition:none}}
-/* scroll reveal: content below the fold rises and fades in, one by one, as it enters the screen */
-.rv{opacity:0;transform:translateY(32px);filter:blur(6px);transition:opacity .9s cubic-bezier(.22,1,.36,1) var(--d,0s),transform 1s cubic-bezier(.22,1,.36,1) var(--d,0s),filter .9s ease var(--d,0s)}
-.rv.in{opacity:1;transform:none;filter:none}
-@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;filter:none;transition:none}}
+/* scroll reveal (after conicorn.framer.ai): text lifts 10–16px and fades in, headings word by word; cards rise 50px, one after another */
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s cubic-bezier(.22,1,.36,1) var(--d,0s),transform .8s cubic-bezier(.22,1,.36,1) var(--d,0s)}
+.rv.rv-card{transform:translateY(50px);transition-duration:.8s,1s}
+.rv.in{opacity:1;transform:none}
+.wsplit .wd{display:inline-block;white-space:pre}
+.wsplit.pend .wd{opacity:.001;transform:translateY(10px)}
+.wsplit.pend.go .wd{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);transition-delay:calc(var(--wi)*70ms)}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}.wsplit.pend .wd{opacity:1;transform:none}}
 
 .bfly-copy h2{font-family:var(--f-display);font-weight:400;color:#001666;font-size:clamp(30px,3.6vw,54px);line-height:1.1;margin:0;text-wrap:balance}
 @media (max-width:720px){.bfly-copy h2{font-size:26px}}
@@ -707,38 +711,48 @@ section{scroll-margin-top:72px}
   /* scroll reveal: groups of elements; items in a group arrive one after another */
   (function(){
     if(reduce||!('IntersectionObserver' in window))return;
+    const below=el=>el.getBoundingClientRect().top>innerHeight*0.92;
+    // headings: split into words that rise in one after another
+    const heads=$$('#works .sec-head h2, #mindset .sec-head h2, .about h2').filter(below);
+    heads.forEach(h=>{
+      const words=h.innerHTML.split(/(\s+|<br\s*\/?>)/i); let i=0;
+      h.innerHTML=words.map(w=>/^\s+$/.test(w)||/^<br/i.test(w)||!w?w:'<span class="wd" style="--wi:'+(i++)+'">'+w+'</span>').join('');
+      h.classList.add('wsplit','pend');
+    });
     const groups=[
       ['.clients .eyebrow','.clients .marquee'],
-      ['#works .sec-head > *'],
+      ['#works .sec-head .eyebrow'],
       ['.project'],
-      ['#mindset .sec-head > *'],
-      ['.about-grid > div:first-child > *'],
+      ['#mindset .sec-head .eyebrow'],
+      ['.about-grid > div:first-child > :not(h2)'],
       ['#pile .pol'],['#pile .moments'],
       ['#big'],['.socials .soc','.foot-links a'],
       ['.meadow']
     ];
-    const io=new IntersectionObserver(es=>{let k=0;es.forEach(e=>{
-      const el=e.target;
-      if(!e.isIntersecting){ if(e.boundingClientRect.bottom<0){io.unobserve(el);el.classList.remove('rv');} return; } /* jumped past it: just show it */
-      io.unobserve(el);
-      if(el.classList.contains('project')){el.style.setProperty('--d',(k++*0.18).toFixed(2)+'s')} /* cards that arrive together still come one by one */
+    const show=el=>{
+      if(el.classList.contains('wsplit')){el.classList.add('go');setTimeout(()=>el.classList.remove('pend','go'),1600);return}
       el.classList.add('in');
-      // hand the element back to its own hover styles once it has arrived
-      const done=()=>{el.classList.remove('rv','in');el.style.removeProperty('--d')};
-      setTimeout(done,1200+parseFloat(el.style.getPropertyValue('--d')||0)*1000);
-    })},{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+      setTimeout(()=>{el.classList.remove('rv','rv-card','in');el.style.removeProperty('--d')},1300+parseFloat(el.style.getPropertyValue('--d')||0)*1000);
+    };
+    const io=new IntersectionObserver(es=>{let k=0;es.forEach(e=>{
+      if(!e.isIntersecting)return;
+      const el=e.target; io.unobserve(el);
+      if(el.classList.contains('project'))el.style.setProperty('--d',(k++*0.15).toFixed(2)+'s'); /* cards that arrive together still come one by one */
+      show(el);
+    })},{threshold:.15,rootMargin:'0px 0px -6% 0px'});
+    heads.forEach(h=>io.observe(h));
     groups.forEach(sel=>{
-      const els=sel.flatMap(s=>$$(s));
       let n=0;
-      els.forEach(el=>{
-        if(el.getBoundingClientRect().top<innerHeight*0.92)return; /* already on screen at load: leave it visible */
-        el.classList.add('rv'); el.style.setProperty('--d',(n++*0.12).toFixed(2)+'s'); io.observe(el);
+      sel.flatMap(s=>$$(s)).forEach(el=>{
+        if(!below(el))return; /* already on screen at load: leave it visible */
+        el.classList.add('rv'); if(el.classList.contains('project')||el.classList.contains('pol'))el.classList.add('rv-card');
+        el.style.setProperty('--d',(n++*0.1).toFixed(2)+'s'); io.observe(el);
       });
     });
-    // if the visitor jumps past something (nav link, fast scroll), show it straight away
-    let tk=0; addEventListener('scroll',()=>{ if(tk)return; tk=requestAnimationFrame(()=>{ tk=0; $$('.rv:not(.in)').forEach(el=>{ if(el.getBoundingClientRect().bottom<0){io.unobserve(el);el.classList.remove('rv');el.style.removeProperty('--d')} }) }) },{passive:true});
-    // cards: each card triggers on its own, so restart the stagger per card
     $$('.project.rv').forEach(c=>c.style.setProperty('--d','0s'));
+    // if the visitor jumps past something (nav link, fast scroll), show it straight away
+    let tk=0; addEventListener('scroll',()=>{ if(tk)return; tk=requestAnimationFrame(()=>{ tk=0;
+      $$('.rv:not(.in), .wsplit.pend:not(.go)').forEach(el=>{ if(el.getBoundingClientRect().bottom<0){io.unobserve(el);el.classList.remove('rv','rv-card','pend');el.style.removeProperty('--d')} }) }) },{passive:true});
   })();
 
   /* cat: rest it on the tops of the letters, like it is lying across the word */
