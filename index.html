@@ -167,7 +167,7 @@ section{scroll-margin-top:72px}
 .bfly{position:relative;height:calc(86vh - var(--head,72px));height:calc(86svh - var(--head,72px));background:#FAFAF1;overflow:hidden}
 .bfly canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 /* heading + intro that grow out of the butterfly's centre once it has reached full size */
-.bfly-copy{position:absolute;left:50%;top:var(--cy,50%);z-index:2;width:min(640px,86vw);text-align:center;transform:translate(-50%,-50%) scale(0);opacity:0;transform-origin:50% 50%;transition:transform 1.6s cubic-bezier(.22,1,.36,1),opacity 1.1s ease;pointer-events:none}
+.bfly-copy{position:absolute;left:50%;top:var(--cy,50%);z-index:2;width:min(640px,86vw);text-align:center;transform:translate(-50%,-50%) scale(0);opacity:0;transform-origin:50% 50%;transition:transform .96s cubic-bezier(.22,1,.36,1),opacity .66s ease;pointer-events:none}
 .bfly-copy.in{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto}
 .bfly-copy::before{content:"";position:absolute;inset:-34% -16%;z-index:-1;border-radius:50%;background:radial-gradient(closest-side,rgba(250,250,241,.94) 0%,rgba(250,250,241,.86) 45%,rgba(250,250,241,.5) 72%,rgba(250,250,241,0) 100%);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);-webkit-mask-image:radial-gradient(closest-side,#000 55%,transparent 100%);mask-image:radial-gradient(closest-side,#000 55%,transparent 100%)}
 .bfly-copy h1{font-family:var(--f-display);font-weight:400;color:#001666;font-size:clamp(30px,3.6vw,54px);line-height:1.1;margin:0;text-wrap:balance}
@@ -649,13 +649,13 @@ document.addEventListener('click',function(ev){
       if(t0===null){t0=now;last=now}
       const dt=Math.min(0.05,(now-last)/1000); last=now;
       let t=(now-t0)/1000; if(reducedM)t=30;
-      if(!copyShown&&t>3.0+0.7){copyShown=true;copyEl.classList.add('in')}
-      const g=clamp((t-0.2)/2.8), grow=smoother(g), fade=smoother(clamp(g*1.5));
+      if(!copyShown&&t>(3.0+0.7)*0.6){copyShown=true;copyEl.classList.add('in')}
+      const g=clamp((t-0.12)/1.68), grow=smoother(g), fade=smoother(clamp(g*1.5));
       // the mockup's 490px butterfly on a 1920×1080 artboard, scaled to this section
       const Sz=BASE*grow;
       const dc=ht?octx:ctx; ctx.clearRect(0,0,W,H); if(ht)octx.clearRect(0,0,W,H);
       if(Sz>=0.5){
-        const amp=reducedM?0:smoother(clamp((t-1.9)/2.2));
+        const amp=reducedM?0:smoother(clamp((t-1.14)/1.32));
         tau+=reducedM?0:dt*FLAP_SPEED;
         const period=2.6, A=1.12*FLAP_DEPTH, k=BASE/490;
         const bob=(-amp*9*Math.sin((tau/period)*TWO_PI-0.6)+Math.sin(t*0.55)*5*amp)*k;
