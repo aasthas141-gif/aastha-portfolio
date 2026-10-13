@@ -319,7 +319,7 @@ document.addEventListener('click',function(ev){
 
 <header class="top" id="top">
   <nav class="wrap nav" aria-label="Main">
-    <a class="logo" href="#butterfly"><span class="logo-mark" aria-hidden="true">A</span><span class="name">Aastha Singh</span></a>
+    <a class="logo" href="./" data-top><span class="logo-mark" aria-hidden="true">A</span><span class="name">Aastha Singh</span></a>
     <div class="nav-links">
       <a href="#works" data-sec="works">Work</a>
       <a href="#about" data-sec="about" class="hide-sm">About</a>
@@ -720,6 +720,16 @@ document.addEventListener('click',function(ev){
     setTimeout(()=>box.classList.add('shake'),700);
     setTimeout(()=>{box.classList.remove('shake');outOfBox();setTimeout(()=>busy=false,2000)},1300);
   });
+
+  /* in-page links scroll smoothly without adding #section to the address bar */
+  document.addEventListener('click',e=>{
+    const a=e.target.closest&&e.target.closest('a'); if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button!==0)return;
+    if(a.hasAttribute('data-top')){e.preventDefault();scrollTo({top:0,behavior:reduce?'auto':'smooth'});return}
+    const h=a.getAttribute('href')||''; if(h.length<2||h[0]!=='#')return;
+    const el=document.getElementById(h.slice(1)); if(!el)return;
+    e.preventDefault(); el.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+  });
+  if(location.hash){history.replaceState(null,'',location.pathname+location.search)}
 
   /* scroll reveal: groups of elements; items in a group arrive one after another */
   (function(){
