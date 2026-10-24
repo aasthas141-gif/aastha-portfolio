@@ -1,2 +1,13 @@
 [build]
   publish = "."
+
+# images and fonts carry a version in their address, so browsers can keep them for a year
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
