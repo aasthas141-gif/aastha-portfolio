@@ -248,12 +248,10 @@ section{scroll-margin-top:72px}
 .big .l:hover{transform:translateY(-.14em) rotate(-4deg);color:var(--orange)}
 .big.wave .l{animation:wave .9s var(--ease-spring) both;animation-delay:calc(var(--i)*45ms)}
 @keyframes wave{0%{transform:none}35%{transform:translateY(-.16em)}100%{transform:none}}
-.cat{position:absolute;left:2%;bottom:84%;width:clamp(120px,24vw,290px);background:none;border:0;padding:0;cursor:pointer;z-index:3}
+.cat{position:absolute;left:2%;bottom:84%;width:clamp(120px,24vw,290px);background:none;border:0;padding:0;cursor:default;z-index:3;-webkit-tap-highlight-color:transparent}
 .cat img{width:100%;transform-origin:70% 100%}
 .cat.purr img{animation:purr .7s ease}
 @keyframes purr{0%,100%{transform:none}25%{transform:scaleY(.94) translateY(3px)}55%{transform:scaleY(1.04) translateY(-4px)}}
-.meow{position:absolute;right:-4%;top:-6%;font-family:var(--f-hand);font-size:clamp(14px,1.6vw,18px);background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:14px 14px 14px 2px;padding:3px 10px;white-space:nowrap;opacity:0;transform:translateY(6px) scale(.8);transition:opacity .25s,transform .35s var(--ease-spring);pointer-events:none}
-.cat.purr .meow{opacity:1;transform:none}
 .connect-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:20px;margin-top:clamp(28px,4vw,44px)}
 .socials{display:flex;gap:10px}
 .soc{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--ink);display:grid;place-items:center;color:var(--ink);text-decoration:none;font:600 15px/1 var(--f-body);transition:background .25s,color .25s;will-change:transform}
@@ -452,7 +450,7 @@ document.addEventListener('click',function(ev){
   <div class="wrap">
     <h2 class="big" id="big" aria-label="Let's connect">
       <span class="word" aria-hidden="true">
-        <button class="cat" id="cat" type="button" aria-label="Pet the cat" data-cursor="Pet me"><img loading="lazy" decoding="async" src="images/cat_anim-420.webp?v=05d20472" data-still="images/cat_still-420.webp?v=cbcc565d" alt="" width="420" height="235"><span class="meow">mrrp. hire her?</span></button>
+        <button class="cat" id="cat" type="button" aria-label="Pet the cat"><img loading="lazy" decoding="async" src="images/cat_anim-420.webp?v=05d20472" data-still="images/cat_still-420.webp?v=cbcc565d" alt="" width="420" height="235"></button>
         <span class="lt">LET’S</span></span>
       <span class="word" aria-hidden="true"><span class="lt">CONNECT</span></span>
     </h2>
